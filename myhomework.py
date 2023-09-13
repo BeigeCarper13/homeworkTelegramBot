@@ -15,14 +15,22 @@ deletem = []
 text = ''
 status = ''
 isadmin = ''
-subobjlist = {'АНГЛ ЯЗ': 'Лабаченя;Хадарович', 'РУСС': 'РУСС ЯЗ;РУСС ЛИТ', 'БЕЛ': 'БЕЛ ЯЗ;БЕЛ ЛИТ',
-              'ИНФОРМ':'Ковалевская;Боркун', 'ИСТОРИЯ':'БЕЛАРУСИ;ВСЕМИРНАЯ', 'МАТЕМ':'ГЕОМЕТРИЯ;АЛБЕБРА'}
+subobjlist = {'АНГЛ ЯЗ': 'Лабаченя;Хадарович', 'РУСС': 'РУСС ЯЗ;РУСС ЛИТ', 'БЕЛ': 'БЕЛ ЯЗ;БЕЛ ЛИТ;',
+              'ИНФОРМ': 'Ковалевская;Боркун', 'ИСТОРИЯ': 'БЕЛАРУСИ;ВСЕМИРНАЯ', 'МАТЕМ': 'ГЕОМЕТРИЯ;АЛБЕБРА;'}
+curicurral = {'1': 'ВСЕМИРНАЯ;АНГЛ ЯЗ;РУСС ЛИТ;ТРУД ОБУЧ;ИСКУССТВО;БИОЛОГ;',
+              '2': 'БЕЛ ЯЗ;БИОЛОГ;РУСС ЯЗ;ГЕОМЕТРИЯ;ГЕОМЕТРИЯ;АНГЛ ЯЗ;ГЕОГРАФ;',
+              '3': 'ФИЗРА;ХИМИЯ;ФИЗИК;ФИЗИК;ГЕОМЕТРИЯ;БЕЛ ЯЗ;РУСС ЯЗ;',
+              '4': 'ХИМИЯ;ФИЗРА;ФИЗИК;АЛБЕБРА;АНГЛ ЯЗ;БЕЛ ЛИТ;',
+              '5': 'ГЕОГРАФ;ИСТОРИЯ;ФИЗРА;БЕЛ ЛИТ;АЛБЕБРА;АЛБЕБРА;ИНФОРМ;'}
 
 bot = telebot.TeleBot('1876503650:AAH_sMeqFTVZx5PkW6dktrLKKJtIsPYkNck')
 
 
 @bot.message_handler(content_types=['text'])
 def start(message):
+    print(f"Пользователь: {message.from_user.id}, id: {message.chat.id}, username: @{message.from_user.username}, "
+          f"Текст: {message.text}, name: {message.from_user.first_name}.\n")
+
     global status, isadmin
 
     cursor.execute(f"""INSERT ignore `mydb`.`student`(`id`,`status`,`admin`)VALUES('{message.from_user.id}', 'mainmenu', 
@@ -40,6 +48,8 @@ def start(message):
         isadmin = str(check0)[2:len(check0) - 4]
     conn.commit()
 
+    if status == 'banned':
+        bot.send_message(message.from_user.id, f"Вы были забанены")
     if status == 'mainmenu' and isadmin == 'noadmin':
         if message.text == '/admin':
             markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -48,9 +58,11 @@ def start(message):
             deletem.append(bot.send_message(message.from_user.id, f"Напишите пароль: ", reply_markup=markup))
             bot.register_next_step_handler(message, admincheck)
 
-        if message.text == '🗓 ВСЁ ДЗ':
+        elif message.text == '🗓 ВСЁ ДЗ':
             homework(message, isadmin)
-        elif message.text != '/admin':
+        elif message.text == '📋 РАСПИСАНИЕ' or message.text == '/homework' or message.text == '/homework@Misca8bot':
+            lessonslist(message, isadmin)
+        elif message.text == '/basemenu':
             basemenu(message)
 
     if status == 'mainmenu' and isadmin == 'yesadmin':
@@ -61,11 +73,19 @@ def start(message):
             lessons(message)
         if message.text == '🗓 ВСЁ ДЗ':
             homework(message, isadmin)
-        elif message.text != '/admin':
+        if message.text == '📋 РАСПИСАНИЕ' or message.text == '/homework' or message.text == '/homework@Misca8bot':
+            lessonslist(message, isadmin)
+        if message.text == '🔧 ПОМЕНЯТЬ':
+            markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+            btn1 = types.KeyboardButton("❌ Отменить")
+            markup.add(btn1)
+            deletem.append(bot.send_message(message.from_user.id, f"Впишите день недели", reply_markup=markup))
+            bot.register_next_step_handler(message, change)
+        if message.text == '/basemenu':
             adminmenu(message)
 
     if status == 'adding' and isadmin == 'yesadmin':
-        if message.text == 'АНГЛ ЯЗ' or message.text == 'РУСС' or message.text == 'БЕЛ' or message.text == 'ИНФОРМ'\
+        if message.text == 'АНГЛ ЯЗ' or message.text == 'РУСС' or message.text == 'БЕЛ' or message.text == 'ИНФОРМ' \
                 or message.text == 'ИСТОРИЯ' or message.text == 'МАТЕМ':
             a = 0
             keyword1 = ''
@@ -99,6 +119,65 @@ def start(message):
             lessons(message)
 
 
+def lessonslist(message, isitadmin):
+    cursor.execute(f"""SELECT day From `mydb`.`list` WHERE (`number` = '0')""")
+    check = cursor.fetchall()
+
+    alllessons = []
+    onelesson = ''
+    a = 1
+
+    for check0 in check:
+
+        for i in curicurral[str(int(str(check0)[2:len(str(check0)) - 3]))]:
+            if i == ';':
+                alllessons.append(onelesson)
+                onelesson = ''
+            else:
+                onelesson += i
+    onelesson = 'ДЗ НА ЗАВТРА:\n'
+
+    for i in alllessons:
+        if i == 'АНГЛ ЯЗ':
+            cursor.execute(f"""SELECT text From `mydb`.`object` WHERE (`object` = 'Лабаченя')""")
+            obj = cursor.fetchall()
+            for obj0 in obj:
+                onelesson += f'{a}) АНГЛ ЯЗ(Лабаченя): {str(obj0)[2:len(str(obj0)) - 3]}\n'
+            cursor.execute(f"""SELECT text From `mydb`.`object` WHERE (`object` = 'ХАДАРОВИЧ')""")
+            obj = cursor.fetchall()
+            for obj0 in obj:
+                onelesson += f'{a}) АНГЛ ЯЗ(ХАДАРОВИЧ): {str(obj0)[2:len(str(obj0)) - 3]}\n'
+                a += 1
+        else:
+            cursor.execute(f"""SELECT text From `mydb`.`object` WHERE (`object` = '{i}')""")
+            obj = cursor.fetchall()
+
+            for obj0 in obj:
+                onelesson += f'{a}) {i}: {str(obj0)[2:len(str(obj0)) - 3]}\n'
+                a += 1
+    bot.send_message(message.chat.id, f"{onelesson}")
+
+    alllessons.clear()
+    if isitadmin == 'yesadmin' and message.chat.id == message.from_user.id:
+        adminmenu(message)
+    if isitadmin == 'noadmin' and message.chat.id == message.from_user.id:
+        basemenu(message)
+
+
+def change(message):
+    if message.text == '❌ Отменить':
+        bot.send_message(message.from_user.id, f"Действие было отменено")
+        lessons(message)
+    else:
+        cursor.execute(
+            f"""Delete from mydb.list where lesson = '0'""")
+        cursor.execute(
+            f"""INSERT ignore `mydb`.`list`(`number`,`day`,`lesson`)VALUES('0','{message.text}','0')""")
+        conn.commit()
+        bot.send_message(message.from_user.id, f"Спасибо за ввод даты!")
+        adminmenu(message)
+
+
 def subgroups(message, keyword1, keyword2):
     if message.text == '❌ Отменить':
         bot.send_message(message.from_user.id, f"Действие было отменено")
@@ -115,7 +194,8 @@ def subgroups(message, keyword1, keyword2):
         btn2 = types.KeyboardButton(f'2️⃣  {keyword2[4:len(keyword2)]}')
         btn3 = types.KeyboardButton("❌ Отменить")
         markup.add(btn1, btn2, btn3)
-        deletem.append(bot.send_message(message.from_user.id, f"Вы ввели какюую-то херню. Введите нормально: ", reply_markup=markup))
+        deletem.append(bot.send_message(message.from_user.id, f"Вы ввели какюую-то херню. Введите нормально: ",
+                                        reply_markup=markup))
         bot.register_next_step_handler(message, subgroups, f'{keyword1}', f'{keyword2}')
 
 
@@ -155,18 +235,19 @@ def homework(message, isitadmin):
     obj = cursor.fetchall()
     for obj0 in obj:
         format = "'%M %D %Y, %H %M %S'"
-        cursor.execute(f"""SELECT DATE_FORMAT(datatime, '%M %D %Y, %H:%m:%s') From `mydb`.`object` where object = '{str(obj0)[2:len(str(obj0))-3].upper()}'""")
+        cursor.execute(
+            f"""SELECT DATE_FORMAT(datatime, '%M %D %Y, %H:%m:%s') From `mydb`.`object` where object = '{str(obj0)[2:len(str(obj0)) - 3].upper()}'""")
 
         datet = cursor.fetchall()
         for datet0 in datet:
 
-            cursor.execute(f"""SELECT text From `mydb`.`object` where object = '{str(obj0)[2:len(str(obj0)) - 3].upper()}'""")
+            cursor.execute(
+                f"""SELECT text From `mydb`.`object` where object = '{str(obj0)[2:len(str(obj0)) - 3].upper()}'""")
             textt = cursor.fetchall()
             for textt0 in textt:
                 bot.send_message(message.from_user.id,
-                                 f"{str(obj0)[2:len(str(obj0))-3]}: {str(textt0)[2:len(str(textt0))-3]} \n-обновленно в {str(datet0)[2:len(str(datet0))-3]}-\n\n")
-#                text += f"{str(obj0)[2:len(str(obj0))-3]}: {text0} \n-обновленно в {datet0}-\n\n"
-#    bot.send_message(message.from_user.id, text)
+                                 f"{str(obj0)[2:len(str(obj0)) - 3]}: {str(textt0)[2:len(str(textt0)) - 3]} \n"
+                                 f"-обновленно в {str(datet0)[2:len(str(datet0)) - 3]}-\n\n")
     if isitadmin == 'yesadmin':
         adminmenu(message)
     if isitadmin == 'noadmin':
@@ -176,7 +257,8 @@ def homework(message, isitadmin):
 def basemenu(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     btn1 = types.KeyboardButton('🗓 ВСЁ ДЗ')
-    markup.add(btn1)
+    btn2 = types.KeyboardButton('📋 РАСПИСАНИЕ')
+    markup.add(btn1,btn2)
     bot.send_message(message.from_user.id, f"Выберите опцию", reply_markup=markup)
 
 
@@ -184,7 +266,9 @@ def adminmenu(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     btn1 = types.KeyboardButton('🗓 ВСЁ ДЗ')
     btn2 = types.KeyboardButton('✏ ДОБАВИТЬ')
-    markup.add(btn1, btn2)
+    btn3 = types.KeyboardButton('📋 РАСПИСАНИЕ')
+    btn4 = types.KeyboardButton('🔧 ПОМЕНЯТЬ')
+    markup.add(btn1, btn2, btn3, btn4)
     bot.send_message(message.from_user.id, f"Выберите опцию для администатора", reply_markup=markup)
 
 
