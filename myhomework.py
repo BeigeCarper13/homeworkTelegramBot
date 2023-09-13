@@ -1,16 +1,14 @@
-import random
-
 import mysql
 import telebot
 from telebot import types
 import time
 import mysql.connector as sql
 
-conn = sql.connect(host="localhost", user="root", password="mySQL2341m", database="mydb",
-                   auth_plugin='caching_sha2_password')
+conn = sql.connect(host="eu-cdbr-west-03.cleardb.net", user="b8660ea738335d", password="99f21639",
+                   database="heroku_a5b02c6d58c3d21", port = "3306")
 
 cursor = conn.cursor()
-
+maindb = 'heroku_a5b02c6d58c3d21'
 deletem = []
 text = ''
 status = ''
@@ -33,16 +31,16 @@ def start(message):
 
     global status, isadmin
 
-    cursor.execute(f"""INSERT ignore `mydb`.`student`(`id`,`status`,`admin`)VALUES('{message.from_user.id}', 'mainmenu', 
+    cursor.execute(f"""INSERT ignore `{maindb}`.`student`(`id`,`status`,`admin`)VALUES('{message.from_user.id}', 'mainmenu', 
     'noadmin')""")
 
-    cursor.execute(f"""SELECT status From `mydb`.`student` WHERE (`id` = {message.from_user.id});""")
+    cursor.execute(f"""SELECT status From `{maindb}`.`student` WHERE (`id` = {message.from_user.id});""")
     check = cursor.fetchall()
     for check0 in check:
         status = str(check0)[2:len(check0) - 4]
     conn.commit()
 
-    cursor.execute(f"""SELECT admin From `mydb`.`student` WHERE (`id` = {message.from_user.id});""")
+    cursor.execute(f"""SELECT admin From `{maindb}`.`student` WHERE (`id` = {message.from_user.id});""")
     check = cursor.fetchall()
     for check0 in check:
         isadmin = str(check0)[2:len(check0) - 4]
@@ -68,7 +66,7 @@ def start(message):
     if status == 'mainmenu' and isadmin == 'yesadmin':
         if message.text == '✏ ДОБАВИТЬ':
             cursor.execute(
-                f"""UPDATE `mydb`.`student` SET `status` = 'adding' WHERE (`id` = {message.from_user.id})""")
+                f"""UPDATE `{maindb}`.`student` SET `status` = 'adding' WHERE (`id` = {message.from_user.id})""")
             conn.commit()
             lessons(message)
         if message.text == '🗓 ВСЁ ДЗ':
@@ -106,7 +104,7 @@ def start(message):
             bot.register_next_step_handler(message, subgroups, f'1️⃣ {keyword1}', f'2️⃣ {keyword2[1:len(keyword2)]}')
         elif message.text == '❌ВЫЙТИ':
             cursor.execute(
-                f"""UPDATE `mydb`.`student` SET `status` = 'mainmenu' WHERE (`id` = {message.from_user.id})""")
+                f"""UPDATE `{maindb}`.`student` SET `status` = 'mainmenu' WHERE (`id` = {message.from_user.id})""")
             conn.commit()
             adminmenu(message)
         elif message.text == 'ГЕОГРАФ' or message.text == 'БИОЛОГ' or message.text == 'ФИЗИК' or message.text == 'ХИМИЯ':
@@ -120,7 +118,7 @@ def start(message):
 
 
 def lessonslist(message, isitadmin):
-    cursor.execute(f"""SELECT day From `mydb`.`list` WHERE (`number` = '0')""")
+    cursor.execute(f"""SELECT day From `{maindb}`.`list` WHERE (`number` = '0')""")
     check = cursor.fetchall()
 
     alllessons = []
@@ -139,17 +137,17 @@ def lessonslist(message, isitadmin):
 
     for i in alllessons:
         if i == 'АНГЛ ЯЗ':
-            cursor.execute(f"""SELECT text From `mydb`.`object` WHERE (`object` = 'Лабаченя')""")
+            cursor.execute(f"""SELECT text From `{maindb}`.`object` WHERE (`object` = 'Лабаченя')""")
             obj = cursor.fetchall()
             for obj0 in obj:
                 onelesson += f'{a}) АНГЛ ЯЗ(Лабаченя): {str(obj0)[2:len(str(obj0)) - 3]}\n'
-            cursor.execute(f"""SELECT text From `mydb`.`object` WHERE (`object` = 'ХАДАРОВИЧ')""")
+            cursor.execute(f"""SELECT text From `{maindb}`.`object` WHERE (`object` = 'ХАДАРОВИЧ')""")
             obj = cursor.fetchall()
             for obj0 in obj:
                 onelesson += f'{a}) АНГЛ ЯЗ(ХАДАРОВИЧ): {str(obj0)[2:len(str(obj0)) - 3]}\n'
                 a += 1
         else:
-            cursor.execute(f"""SELECT text From `mydb`.`object` WHERE (`object` = '{i}')""")
+            cursor.execute(f"""SELECT text From `{maindb}`.`object` WHERE (`object` = '{i}')""")
             obj = cursor.fetchall()
 
             for obj0 in obj:
@@ -170,9 +168,9 @@ def change(message):
         lessons(message)
     else:
         cursor.execute(
-            f"""Delete from mydb.list where lesson = '0'""")
+            f"""Delete from {maindb}.list where lesson = '0'""")
         cursor.execute(
-            f"""INSERT ignore `mydb`.`list`(`number`,`day`,`lesson`)VALUES('0','{message.text}','0')""")
+            f"""INSERT ignore `{maindb}`.`list`(`number`,`day`,`lesson`)VALUES('0','{message.text}','0')""")
         conn.commit()
         bot.send_message(message.from_user.id, f"Спасибо за ввод даты!")
         adminmenu(message)
@@ -205,9 +203,9 @@ def write(message, hitler):
         lessons(message)
     else:
         cursor.execute(
-            f"""Delete from mydb.object where object = '{hitler}'""")
+            f"""Delete from {maindb}.object where object = '{hitler}'""")
         cursor.execute(
-            f"""INSERT ignore `mydb`.`object`(`object`,`text`)VALUES('{hitler}','{message.text}')""")
+            f"""INSERT ignore `{maindb}`.`object`(`object`,`text`)VALUES('{hitler}','{message.text}')""")
         conn.commit()
         bot.send_message(message.from_user.id, f"Спасибо за ввод дз!")
         adminmenu(message)
@@ -231,18 +229,18 @@ def lessons(message):
 
 
 def homework(message, isitadmin):
-    cursor.execute(f"""SELECT object From `mydb`.`object`""")
+    cursor.execute(f"""SELECT object From `{maindb}`.`object`""")
     obj = cursor.fetchall()
     for obj0 in obj:
         format = "'%M %D %Y, %H %M %S'"
         cursor.execute(
-            f"""SELECT DATE_FORMAT(datatime, '%M %D %Y, %H:%m:%s') From `mydb`.`object` where object = '{str(obj0)[2:len(str(obj0)) - 3].upper()}'""")
+            f"""SELECT DATE_FORMAT(datatime, '%M %D %Y, %H:%m:%s') From `{maindb}`.`object` where object = '{str(obj0)[2:len(str(obj0)) - 3].upper()}'""")
 
         datet = cursor.fetchall()
         for datet0 in datet:
 
             cursor.execute(
-                f"""SELECT text From `mydb`.`object` where object = '{str(obj0)[2:len(str(obj0)) - 3].upper()}'""")
+                f"""SELECT text From `{maindb}`.`object` where object = '{str(obj0)[2:len(str(obj0)) - 3].upper()}'""")
             textt = cursor.fetchall()
             for textt0 in textt:
                 bot.send_message(message.from_user.id,
@@ -278,7 +276,7 @@ def admincheck(message):
         basemenu(message)
 
     elif message.text == 'Десятка домой':
-        cursor.execute(f"""UPDATE `mydb`.`student` SET `admin` = 'yesadmin' WHERE (`id` = {message.from_user.id})""")
+        cursor.execute(f"""UPDATE `{maindb}`.`student` SET `admin` = 'yesadmin' WHERE (`id` = {message.from_user.id})""")
         conn.commit()
         bot.send_message(message.from_user.id, f"Поздравляю! Вы стали администратором в боте!")
         adminmenu(message)
