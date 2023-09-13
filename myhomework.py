@@ -4,6 +4,8 @@ from telebot import types
 import time
 import mysql.connector as sql
 
+
+
 conn = sql.connect(host="eu-cdbr-west-03.cleardb.net", user="b8660ea738335d", password="99f21639",
                    database="heroku_a5b02c6d58c3d21", port = "3306")
 
