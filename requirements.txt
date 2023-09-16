@@ -2,3 +2,4 @@ mysql~=0.0.3
 mysql-connector-python~=8.0.33
 telebot~=0.0.5
 setuptools~=60.2.0
+python=3.9
