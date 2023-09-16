@@ -14,13 +14,13 @@ deletem = []
 text = ''
 status = ''
 isadmin = ''
-subobjlist = {'АНГЛ ЯЗ': 'Лабаченя;Хадарович', 'РУСС': 'РУСС ЯЗ;РУСС ЛИТ', 'БЕЛ': 'БЕЛ ЯЗ;БЕЛ ЛИТ;',
-              'ИНФОРМ': 'Ковалевская;Боркун', 'ИСТОРИЯ': 'БЕЛАРУСИ;ВСЕМИРНАЯ', 'МАТЕМ': 'ГЕОМЕТРИЯ;АЛБЕБРА;'}
+subobjlist = {'АНГЛ ЯЗ': 'Лабаченя;Хадарович', 'РУСС': 'РУСС ЯЗ;РУСС ЛИТ', 'БЕЛ': 'БЕЛ ЯЗ;БЕЛ ЛИТ',
+              'ИНФОРМ': 'Ковалевская;Боркун', 'ИСТОРИЯ': 'БЕЛАРУСИ;ВСЕМИРНАЯ', 'МАТЕМ': 'ГЕОМЕТРИЯ;АЛБЕБРА'}
 curicurral = {'1': 'ВСЕМИРНАЯ;АНГЛ ЯЗ;РУСС ЛИТ;ТРУД ОБУЧ;ИСКУССТВО;БИОЛОГ;',
               '2': 'БЕЛ ЯЗ;БИОЛОГ;РУСС ЯЗ;ГЕОМЕТРИЯ;ГЕОМЕТРИЯ;АНГЛ ЯЗ;ГЕОГРАФ;',
               '3': 'ФИЗРА;ХИМИЯ;ФИЗИК;ФИЗИК;ГЕОМЕТРИЯ;БЕЛ ЯЗ;РУСС ЯЗ;',
               '4': 'ХИМИЯ;ФИЗРА;ФИЗИК;АЛБЕБРА;АНГЛ ЯЗ;БЕЛ ЛИТ;',
-              '5': 'ГЕОГРАФ;ИСТОРИЯ;ФИЗРА;БЕЛ ЛИТ;АЛБЕБРА;АЛБЕБРА;ИНФОРМ;'}
+              '5': 'ГЕОГРАФ;БЕЛАРУСИ;ФИЗРА;БЕЛ ЛИТ;АЛБЕБРА;АЛБЕБРА;ИНФОРМ;'}
 
 bot = telebot.TeleBot('1876503650:AAH_sMeqFTVZx5PkW6dktrLKKJtIsPYkNck')
 
@@ -31,15 +31,16 @@ def start(message):
           f"Текст: {message.text}, name: {message.from_user.first_name}.\n")
 
     global status, isadmin
+    try:
+        cursor.execute(f"""INSERT ignore `{maindb}`.`student`(`id`,`status`,`admin`)VALUES('{message.from_user.id}', 'mainmenu', 'noadmin')""")
+    except  mysql.connector.errors.OperationalError:
+        print("mysql не работает")
 
-    cursor.execute(f"""INSERT ignore `{maindb}`.`student`(`id`,`status`,`admin`)VALUES('{message.from_user.id}', 'mainmenu', 
-    'noadmin')""")
 
     cursor.execute(f"""SELECT status From `{maindb}`.`student` WHERE (`id` = {message.from_user.id});""")
     check = cursor.fetchall()
     for check0 in check:
         status = str(check0)[2:len(check0) - 4]
-    conn.commit()
 
     cursor.execute(f"""SELECT admin From `{maindb}`.`student` WHERE (`id` = {message.from_user.id});""")
     check = cursor.fetchall()
@@ -66,8 +67,7 @@ def start(message):
 
     if status == 'mainmenu' and isadmin == 'yesadmin':
         if message.text == '✏ ДОБАВИТЬ':
-            cursor.execute(
-                f"""UPDATE `{maindb}`.`student` SET `status` = 'adding' WHERE (`id` = {message.from_user.id})""")
+            cursor.execute(f"""UPDATE `{maindb}`.`student` SET `status` = 'adding' WHERE (`id` = {message.from_user.id})""")
             conn.commit()
             lessons(message)
         if message.text == '🗓 ВСЁ ДЗ':
@@ -146,6 +146,28 @@ def lessonslist(message, isitadmin):
             obj = cursor.fetchall()
             for obj0 in obj:
                 onelesson += f'{a}) АНГЛ ЯЗ(ХАДАРОВИЧ): {str(obj0)[2:len(str(obj0)) - 3]}\n'
+                a += 1
+        elif i == 'БЕЛАРУСИ':
+            cursor.execute(f"""SELECT text From `{maindb}`.`object` WHERE (`object` = 'БЕЛАРУСИ')""")
+            obj = cursor.fetchall()
+            for obj0 in obj:
+                onelesson += f'{a}) ИСТОРИЯ БЕЛАРУСИ: {str(obj0)[2:len(str(obj0)) - 3]}\n'
+            a += 1
+        elif i == 'ВСЕМИРНАЯ':
+            cursor.execute(f"""SELECT text From `{maindb}`.`object` WHERE (`object` = 'ВСЕМИРНАЯ')""")
+            obj = cursor.fetchall()
+            for obj0 in obj:
+                onelesson += f'{a}) ВСЕМИРНАЯ ИСТОРИЯ: {str(obj0)[2:len(str(obj0)) - 3]}\n'
+            a += 1
+        elif i == 'ИНФОРМ':
+            cursor.execute(f"""SELECT text From `{maindb}`.`object` WHERE (`object` = 'Ковалевская')""")
+            obj = cursor.fetchall()
+            for obj0 in obj:
+                onelesson += f'{a}) ИНФОРМ(Ковалевская): {str(obj0)[2:len(str(obj0)) - 3]}\n'
+            cursor.execute(f"""SELECT text From `{maindb}`.`object` WHERE (`object` = 'Боркун')""")
+            obj = cursor.fetchall()
+            for obj0 in obj:
+                onelesson += f'{a}) ИНФОРМ(Боркун): {str(obj0)[2:len(str(obj0)) - 3]}\n'
                 a += 1
         else:
             cursor.execute(f"""SELECT text From `{maindb}`.`object` WHERE (`object` = '{i}')""")
