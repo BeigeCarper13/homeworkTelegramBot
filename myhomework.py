@@ -275,7 +275,7 @@ def homework(message, isitadmin):
                 print(a)
                 a += f"{str(obj0)[2:len(str(obj0)) - 3]}: {str(textt0)[2:len(str(textt0)) - 3]} \n" \
                      f"-обновленно в {str(datet0)[2:len(str(datet0)) - 3]}-\n\n"
-    bot.send_message(message.from_user.id, a)
+    bot.send_message(message.from_user.id, '1234')
     cursor.execute(f"""UPDATE `{maindb}`.`student` SET `search` = '0' WHERE (`id` = {message.from_user.id})""")
     if isitadmin == 'yesadmin':
         adminmenu(message)
