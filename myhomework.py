@@ -70,7 +70,14 @@ def start(message):
             conn.commit()
             lessons(message)
         if message.text == '🗓 ВСЁ ДЗ':
-            homework(message, isadmin)
+            cursor.execute(f"""select search from `heroku_a5b02c6d58c3d21`.`student` where id = {message.from_user.id};""")
+            check = cursor.fetchall()
+            for check0 in check:
+                print(str(check0)[1:len(check0) - 3])
+                if str(check0)[1:len(check0) - 3] == 1:
+                    bot.send_message(message.from_user.id, f"Запрос обрабатывается...")
+                else:
+                    homework(message, isadmin)
         if message.text == '📋 РАСПИСАНИЕ' or message.text == '/homework' or message.text == '/homework@Misca8bot':
             lessonslist(message, isadmin)
         if message.text == '🔧 ПОМЕНЯТЬ':
@@ -252,7 +259,7 @@ def lessons(message):
 
 def homework(message, isitadmin):
     a = ''
-    cursor.execute(f"""SELECT object From `{maindb}`.`object`""")
+    cursor.execute(f"""UPDATE `{maindb}`.`student` SET `search` = '1' WHERE (`id` = {message.from_user.id})""")
     obj = cursor.fetchall()
     for obj0 in obj:
         format = "'%M %D %Y, %H %M %S'"
@@ -269,27 +276,12 @@ def homework(message, isitadmin):
                 a += f"{str(obj0)[2:len(str(obj0)) - 3]}: {str(textt0)[2:len(str(textt0)) - 3]} \n" \
                      f"-обновленно в {str(datet0)[2:len(str(datet0)) - 3]}-\n\n"
     bot.send_message(message.from_user.id, a)
+    cursor.execute(f"""UPDATE `{maindb}`.`student` SET `search` = '0' WHERE (`id` = {message.from_user.id})""")
     if isitadmin == 'yesadmin':
         adminmenu(message)
     if isitadmin == 'noadmin':
         basemenu(message)
 
-
-def outputhw(message):
-    format = "'%M %D %Y, %H %M %S'"
-    cursor.execute(
-        f"""SELECT DATE_FORMAT(datatime, '%M %D %Y, %H:%m:%s') From `{maindb}`.`object` where object = '{message.text}'""")
-
-    datet = cursor.fetchall()
-    for datet0 in datet:
-
-        cursor.execute(
-            f"""SELECT text From `{maindb}`.`object` where object = '{message.text}'""")
-        textt = cursor.fetchall()
-        for textt0 in textt:
-            bot.send_message(message.from_user.id,
-                                f"{message.text}: {str(textt0)[2:len(str(textt0)) - 3]} \n"
-                                f"-обновленно в {str(datet0)[2:len(str(datet0)) - 3]}-\n\n")
 
 def basemenu(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
