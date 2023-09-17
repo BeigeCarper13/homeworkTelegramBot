@@ -33,9 +33,8 @@ def start(message):
     global status, isadmin
     try:
         cursor.execute(f"""INSERT ignore `{maindb}`.`student`(`id`,`status`,`admin`)VALUES('{message.from_user.id}', 'mainmenu', 'noadmin')""")
-    except  mysql.connector.errors.OperationalError:
+    except mysql.connector.errors.OperationalError:
         print("mysql не работает")
-
 
     cursor.execute(f"""SELECT status From `{maindb}`.`student` WHERE (`id` = {message.from_user.id});""")
     check = cursor.fetchall()
@@ -56,7 +55,7 @@ def start(message):
             btn1 = types.KeyboardButton("❌ Отменить")
             markup.add(btn1)
             deletem.append(bot.send_message(message.from_user.id, f"Напишите пароль: ", reply_markup=markup))
-            bot.register_next_step_handler(message, admincheck)
+            bot.register_next_step_handler(message, admincheck, )
 
         elif message.text == '🗓 ВСЁ ДЗ':
             homework(message, isadmin)
@@ -252,6 +251,7 @@ def lessons(message):
 
 
 def homework(message, isitadmin):
+    a = ''
     cursor.execute(f"""SELECT object From `{maindb}`.`object`""")
     obj = cursor.fetchall()
     for obj0 in obj:
@@ -266,14 +266,30 @@ def homework(message, isitadmin):
                 f"""SELECT text From `{maindb}`.`object` where object = '{str(obj0)[2:len(str(obj0)) - 3].upper()}'""")
             textt = cursor.fetchall()
             for textt0 in textt:
-                bot.send_message(message.from_user.id,
-                                 f"{str(obj0)[2:len(str(obj0)) - 3]}: {str(textt0)[2:len(str(textt0)) - 3]} \n"
-                                 f"-обновленно в {str(datet0)[2:len(str(datet0)) - 3]}-\n\n")
+                a += f"{str(obj0)[2:len(str(obj0)) - 3]}: {str(textt0)[2:len(str(textt0)) - 3]} \n" \
+                     f"-обновленно в {str(datet0)[2:len(str(datet0)) - 3]}-\n\n"
+    bot.send_message(message.from_user.id, a)
     if isitadmin == 'yesadmin':
         adminmenu(message)
     if isitadmin == 'noadmin':
         basemenu(message)
 
+
+def outputhw(message):
+    format = "'%M %D %Y, %H %M %S'"
+    cursor.execute(
+        f"""SELECT DATE_FORMAT(datatime, '%M %D %Y, %H:%m:%s') From `{maindb}`.`object` where object = '{message.text}'""")
+
+    datet = cursor.fetchall()
+    for datet0 in datet:
+
+        cursor.execute(
+            f"""SELECT text From `{maindb}`.`object` where object = '{message.text}'""")
+        textt = cursor.fetchall()
+        for textt0 in textt:
+            bot.send_message(message.from_user.id,
+                                f"{message.text}: {str(textt0)[2:len(str(textt0)) - 3]} \n"
+                                f"-обновленно в {str(datet0)[2:len(str(datet0)) - 3]}-\n\n")
 
 def basemenu(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
