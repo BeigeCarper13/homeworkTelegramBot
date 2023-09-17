@@ -273,7 +273,6 @@ def homework(message, isitadmin):
                 f"""SELECT text From `{maindb}`.`object` where object = '{str(obj0)[2:len(str(obj0)) - 3].upper()}'""")
             textt = cursor.fetchall()
             for textt0 in textt:
-                print(a)
                 a += f"{str(obj0)[2:len(str(obj0)) - 3]}: {str(textt0)[2:len(str(textt0)) - 3]} \n" \
                      f"-обновленно в {str(datet0)[2:len(str(datet0)) - 3]}-\n\n"
     bot.send_message(message.from_user.id, a)
