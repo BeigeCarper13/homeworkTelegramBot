@@ -73,8 +73,7 @@ def start(message):
             cursor.execute(f"""select search from `heroku_a5b02c6d58c3d21`.`student` where id = {message.from_user.id};""")
             check = cursor.fetchall()
             for check0 in check:
-                print(str(check0)[1:len(check0) - 3])
-                if str(check0)[1:len(check0) - 3] == 1:
+                if str(check0)[1:len(check0) - 3] == '1':
                     bot.send_message(message.from_user.id, f"Запрос обрабатывается...")
                 else:
                     homework(message, isadmin)
