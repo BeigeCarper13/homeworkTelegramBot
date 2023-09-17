@@ -58,7 +58,14 @@ def start(message):
             bot.register_next_step_handler(message, admincheck, )
 
         elif message.text == '🗓 ВСЁ ДЗ':
-            homework(message, isadmin)
+            cursor.execute(
+                f"""select search from `heroku_a5b02c6d58c3d21`.`student` where id = {message.from_user.id};""")
+            check = cursor.fetchall()
+            for check0 in check:
+                if str(check0)[1:len(check0) - 3] == '1':
+                    bot.send_message(message.from_user.id, f"Запрос обрабатывается...")
+                else:
+                    homework(message, isadmin)
         elif message.text == '📋 РАСПИСАНИЕ' or message.text == '/homework' or message.text == '/homework@Misca8bot':
             lessonslist(message, isadmin)
         elif message.text == '/basemenu':
