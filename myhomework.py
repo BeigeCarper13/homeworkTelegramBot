@@ -259,6 +259,7 @@ def lessons(message):
 def homework(message, isitadmin):
     a = ''
     cursor.execute(f"""UPDATE `{maindb}`.`student` SET `search` = '1' WHERE (`id` = {message.from_user.id})""")
+    cursor.execute(f"""SELECT object from `{maindb}`.`object`""")
     obj = cursor.fetchall()
     for obj0 in obj:
         format = "'%M %D %Y, %H %M %S'"
@@ -275,7 +276,7 @@ def homework(message, isitadmin):
                 print(a)
                 a += f"{str(obj0)[2:len(str(obj0)) - 3]}: {str(textt0)[2:len(str(textt0)) - 3]} \n" \
                      f"-обновленно в {str(datet0)[2:len(str(datet0)) - 3]}-\n\n"
-    bot.send_message(message.from_user.id, '1234')
+    bot.send_message(message.from_user.id, a)
     cursor.execute(f"""UPDATE `{maindb}`.`student` SET `search` = '0' WHERE (`id` = {message.from_user.id})""")
     if isitadmin == 'yesadmin':
         adminmenu(message)
