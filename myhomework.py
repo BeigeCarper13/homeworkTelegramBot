@@ -4,16 +4,14 @@ from telebot import types
 import time
 import mysql.connector as sql
 
-
-conn = sql.connect(host="eu-cdbr-west-03.cleardb.net", user="b8660ea738335d", password="99f21639",
-                   database="heroku_a5b02c6d58c3d21", port = "3306")
-
-cursor = conn.cursor()
 maindb = 'heroku_a5b02c6d58c3d21'
 deletem = []
 text = ''
 status = ''
 isadmin = ''
+conn = sql.connect(host="eu-cdbr-west-03.cleardb.net", user="b8660ea738335d", password="99f21639",
+                   database="heroku_a5b02c6d58c3d21", port="3306")
+cursor = conn.cursor()
 subobjlist = {'АНГЛ ЯЗ': 'Лабаченя;Хадарович', 'РУСС': 'РУСС ЯЗ;РУСС ЛИТ', 'БЕЛ': 'БЕЛ ЯЗ;БЕЛ ЛИТ',
               'ИНФОРМ': 'Ковалевская;Боркун', 'ИСТОРИЯ': 'БЕЛАРУСИ;ВСЕМИРНАЯ', 'МАТЕМ': 'ГЕОМЕТРИЯ;АЛБЕБРА'}
 curicurral = {'1': 'ВСЕМИРНАЯ;АНГЛ ЯЗ;РУСС ЛИТ;ТРУД ОБУЧ;ИСКУССТВО;БИОЛОГ;',
@@ -27,6 +25,9 @@ bot = telebot.TeleBot('1876503650:AAH_sMeqFTVZx5PkW6dktrLKKJtIsPYkNck')
 
 @bot.message_handler(content_types=['text'])
 def start(message):
+    conn = sql.connect(host="eu-cdbr-west-03.cleardb.net", user="b8660ea738335d", password="99f21639",
+                       database="heroku_a5b02c6d58c3d21", port="3306")
+    cursor = conn.cursor()
     print(f"Пользователь: {message.from_user.id}, id: {message.chat.id}, username: @{message.from_user.username}, "
           f"Текст: {message.text}, name: {message.from_user.first_name}.\n")
 
