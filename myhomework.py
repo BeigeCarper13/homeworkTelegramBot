@@ -73,7 +73,7 @@ def start(message):
             basemenu(message)
 
     if status == 'mainmenu' and isadmin == 'yesadmin':
-        bot.send_message(message.from_user.id, f"< b > (Текст) < / b >")
+        bot.send_message(message.from_user.id, f"<b>(Текст)</b>")
         if message.text == '✏ ДОБАВИТЬ':
             cursor.execute(f"""UPDATE `{maindb}`.`student` SET `status` = 'adding' WHERE (`id` = {message.from_user.id})""")
             conn.commit()
