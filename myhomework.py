@@ -73,7 +73,6 @@ def start(message):
             basemenu(message)
 
     if status == 'mainmenu' and isadmin == 'yesadmin':
-        bot.send_message(message.from_user.id, f"*текст*", parse_mode="Markdown")
         if message.text == '✏ ДОБАВИТЬ':
             cursor.execute(f"""UPDATE `{maindb}`.`student` SET `status` = 'adding' WHERE (`id` = {message.from_user.id})""")
             conn.commit()
@@ -155,40 +154,40 @@ def lessonslist(message, isitadmin):
             cursor.execute(f"""SELECT text From `{maindb}`.`object` WHERE (`object` = 'Лабаченя')""")
             obj = cursor.fetchall()
             for obj0 in obj:
-                onelesson += f'*{a}) АНГЛ ЯЗ(Лабаченя) --*  {str(obj0)[2:len(str(obj0)) - 3]}\n-\n'
+                onelesson += f'*{a}) АНГЛ ЯЗ(Лабаченя) -*  {str(obj0)[2:len(str(obj0)) - 3]}\n-\n'
             cursor.execute(f"""SELECT text From `{maindb}`.`object` WHERE (`object` = 'ХАДАРОВИЧ')""")
             obj = cursor.fetchall()
             for obj0 in obj:
-                onelesson += f'*{a}) АНГЛ ЯЗ(ХАДАРОВИЧ) --*  {str(obj0)[2:len(str(obj0)) - 3]}\n-\n'
+                onelesson += f'*{a}) АНГЛ ЯЗ(ХАДАРОВИЧ) -*  {str(obj0)[2:len(str(obj0)) - 3]}\n-\n'
                 a += 1
         elif i == 'БЕЛАРУСИ':
             cursor.execute(f"""SELECT text From `{maindb}`.`object` WHERE (`object` = 'БЕЛАРУСИ')""")
             obj = cursor.fetchall()
             for obj0 in obj:
-                onelesson += f'*{a}) ИСТОРИЯ БЕЛАРУСИ --*  {str(obj0)[2:len(str(obj0)) - 3]}\n-\n'
+                onelesson += f'*{a}) ИСТОРИЯ БЕЛАРУСИ -*  {str(obj0)[2:len(str(obj0)) - 3]}\n-\n'
             a += 1
         elif i == 'ВСЕМИРНАЯ':
             cursor.execute(f"""SELECT text From `{maindb}`.`object` WHERE (`object` = 'ВСЕМИРНАЯ')""")
             obj = cursor.fetchall()
             for obj0 in obj:
-                onelesson += f'*{a}) ВСЕМИРНАЯ ИСТОРИЯ --*  {str(obj0)[2:len(str(obj0)) - 3]}\n-\n'
+                onelesson += f'*{a}) ВСЕМИРНАЯ ИСТОРИЯ -*  {str(obj0)[2:len(str(obj0)) - 3]}\n-\n'
             a += 1
         elif i == 'ИНФОРМ':
             cursor.execute(f"""SELECT text From `{maindb}`.`object` WHERE (`object` = 'Ковалевская')""")
             obj = cursor.fetchall()
             for obj0 in obj:
-                onelesson += f'*{a}) ИНФОРМ(Ковалевская) --*  {str(obj0)[2:len(str(obj0)) - 3]}\n'
+                onelesson += f'*{a}) ИНФОРМ(Ковалевская) -*  {str(obj0)[2:len(str(obj0)) - 3]}\n'
             cursor.execute(f"""SELECT text From `{maindb}`.`object` WHERE (`object` = 'Боркун')""")
             obj = cursor.fetchall()
             for obj0 in obj:
-                onelesson += f'*{a}) ИНФОРМ(Боркун) --*  {str(obj0)[2:len(str(obj0)) - 3]}\n-\n'
+                onelesson += f'*{a}) ИНФОРМ(Боркун) -*  {str(obj0)[2:len(str(obj0)) - 3]}\n-\n'
                 a += 1
         else:
             cursor.execute(f"""SELECT text From `{maindb}`.`object` WHERE (`object` = '{i}')""")
             obj = cursor.fetchall()
 
             for obj0 in obj:
-                onelesson += f'*{a}) {i} --*  {str(obj0)[2:len(str(obj0)) - 3]}\n-\n'
+                onelesson += f'*{a}) {i} -*  {str(obj0)[2:len(str(obj0)) - 3]}\n-\n'
                 a += 1
     bot.send_message(message.chat.id, f"{onelesson[0:len(onelesson)-2]}", parse_mode="Markdown")
 
