@@ -49,7 +49,7 @@ def start(message):
     conn.commit()
 
     if status == 'banned':
-        bot.send_message(message.from_user.id, f"Вы были забанены")
+        bot.send_message(message.from_user.id, f"Женя, иди отсюда")
     if status == 'mainmenu' and isadmin == 'noadmin':
         if message.text == '/admin':
             markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -154,29 +154,29 @@ def lessonslist(message, isitadmin):
             cursor.execute(f"""SELECT text From `{maindb}`.`object` WHERE (`object` = 'Лабаченя')""")
             obj = cursor.fetchall()
             for obj0 in obj:
-                onelesson += f'{a}) АНГЛ ЯЗ(Лабаченя): {str(obj0)[2:len(str(obj0)) - 3]}\n'
+                onelesson += f'{a}) АНГЛ ЯЗ(Лабаченя): {str(obj0)[2:len(str(obj0)) - 3]}\n-'
             cursor.execute(f"""SELECT text From `{maindb}`.`object` WHERE (`object` = 'ХАДАРОВИЧ')""")
             obj = cursor.fetchall()
             for obj0 in obj:
-                onelesson += f'{a}) АНГЛ ЯЗ(ХАДАРОВИЧ): {str(obj0)[2:len(str(obj0)) - 3]}\n'
+                onelesson += f'{a}) АНГЛ ЯЗ(ХАДАРОВИЧ): {str(obj0)[2:len(str(obj0)) - 3]}\n-'
                 a += 1
         elif i == 'БЕЛАРУСИ':
             cursor.execute(f"""SELECT text From `{maindb}`.`object` WHERE (`object` = 'БЕЛАРУСИ')""")
             obj = cursor.fetchall()
             for obj0 in obj:
-                onelesson += f'{a}) ИСТОРИЯ БЕЛАРУСИ: {str(obj0)[2:len(str(obj0)) - 3]}\n'
+                onelesson += f'{a}) ИСТОРИЯ БЕЛАРУСИ: {str(obj0)[2:len(str(obj0)) - 3]}\n-'
             a += 1
         elif i == 'ВСЕМИРНАЯ':
             cursor.execute(f"""SELECT text From `{maindb}`.`object` WHERE (`object` = 'ВСЕМИРНАЯ')""")
             obj = cursor.fetchall()
             for obj0 in obj:
-                onelesson += f'{a}) ВСЕМИРНАЯ ИСТОРИЯ: {str(obj0)[2:len(str(obj0)) - 3]}\n'
+                onelesson += f'{a}) ВСЕМИРНАЯ ИСТОРИЯ: {str(obj0)[2:len(str(obj0)) - 3]}\n-'
             a += 1
         elif i == 'ИНФОРМ':
             cursor.execute(f"""SELECT text From `{maindb}`.`object` WHERE (`object` = 'Ковалевская')""")
             obj = cursor.fetchall()
             for obj0 in obj:
-                onelesson += f'{a}) ИНФОРМ(Ковалевская): {str(obj0)[2:len(str(obj0)) - 3]}\n'
+                onelesson += f'{a}) ИНФОРМ(Ковалевская): {str(obj0)[2:len(str(obj0)) - 3]}\n-'
             cursor.execute(f"""SELECT text From `{maindb}`.`object` WHERE (`object` = 'Боркун')""")
             obj = cursor.fetchall()
             for obj0 in obj:
@@ -187,9 +187,9 @@ def lessonslist(message, isitadmin):
             obj = cursor.fetchall()
 
             for obj0 in obj:
-                onelesson += f'{a}) {i}: {str(obj0)[2:len(str(obj0)) - 3]}\n'
+                onelesson += f'{a}) {i}: {str(obj0)[2:len(str(obj0)) - 3]}\n-'
                 a += 1
-    bot.send_message(message.chat.id, f"{onelesson}")
+    bot.send_message(message.chat.id, f"{onelesson[0:len(onelesson)-1]}")
 
     alllessons.clear()
     if isitadmin == 'yesadmin' and message.chat.id == message.from_user.id:
