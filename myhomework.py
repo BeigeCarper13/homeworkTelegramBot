@@ -73,6 +73,7 @@ def start(message):
             basemenu(message)
 
     if status == 'mainmenu' and isadmin == 'yesadmin':
+        bot.send_message(message.from_user.id, f"< b > (Текст) < / b >")
         if message.text == '✏ ДОБАВИТЬ':
             cursor.execute(f"""UPDATE `{maindb}`.`student` SET `status` = 'adding' WHERE (`id` = {message.from_user.id})""")
             conn.commit()
@@ -187,7 +188,7 @@ def lessonslist(message, isitadmin):
             obj = cursor.fetchall()
 
             for obj0 in obj:
-                onelesson += f'*{a}) {i}:* {str(obj0)[2:len(str(obj0)) - 3]}\n-\n'
+                onelesson += f'{a}) {i}:  {str(obj0)[2:len(str(obj0)) - 3]}\n-\n'
                 a += 1
     bot.send_message(message.chat.id, f"{onelesson[0:len(onelesson)-2]}")
 
