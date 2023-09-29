@@ -47,7 +47,7 @@ def start(message):
     for check0 in check:
         isadmin = str(check0)[2:len(check0) - 4]
     conn.commit()
-
+    print(status)
     if status == 'banned':
         bot.send_message(message.from_user.id, f"Женя, иди отсюда")
     if status == 'mainmenu' and isadmin == 'noadmin':
