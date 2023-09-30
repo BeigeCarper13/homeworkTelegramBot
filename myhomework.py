@@ -153,7 +153,7 @@ def lessonslist(message, isitadmin):
             cursor.execute(f"""SELECT text From `{maindb}`.`object` WHERE (`object` = 'Лабаченя')""")
             obj = cursor.fetchall()
             for obj0 in obj:
-                onelesson += f'*{a}) АНГЛ ЯЗ(Лабаченя) -*  {str(obj0)[2:len(str(obj0)) - 3]}\n-\n'
+                onelesson += f'*{a}) АНГЛ ЯЗ(Лабаченя) -*  {str(obj0)[2:len(str(obj0)) - 3]}\n'
             cursor.execute(f"""SELECT text From `{maindb}`.`object` WHERE (`object` = 'ХАДАРОВИЧ')""")
             obj = cursor.fetchall()
             for obj0 in obj:
