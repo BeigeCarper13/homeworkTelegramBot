@@ -188,7 +188,8 @@ def lessonslist(message, isitadmin):
             for obj0 in obj:
                 onelesson += f'*{a}) {i} -*  {str(obj0)[2:len(str(obj0)) - 3]}\n-\n'
                 a += 1
-    bot.send_message(message.chat.id, f"{onelesson[0:len(onelesson)-2]}", parse_mode="Markdown")
+    b = onelesson[0:len(onelesson)-2]
+    bot.send_message(message.chat.id, b, parse_mode="Markdown")
 
     alllessons.clear()
     if isitadmin == 'yesadmin' and message.chat.id == message.from_user.id:
